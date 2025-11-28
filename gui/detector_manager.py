@@ -174,21 +174,28 @@ class DetectorManager:
             return False, f"Failed to load model: {str(e)}"
 
     def _load_yolov5(self, config: ModelConfig) -> Tuple[bool, str]:
-        """Load YOLOv5 detector."""
-        if not self._yolov5_available:
-            return False, "YOLOv5 is not installed. Install with: pip install yolov5"
-
+        """Load YOLOv5 detector using Ultralytics."""
         try:
-            from detectors.yolov5_detector import YOLOv5Detector
+            from detectors.yolov11_detector import YOLOv11Detector
 
-            # Try to load from torch hub if local weights not available
-            model_file = config.model_file
-            self._detector = YOLOv5Detector(
-                weights=model_file,
-                imgsz=self._params.img_size,
+            # YOLOv5 is also supported by Ultralytics YOLO class
+            # Use yolov5nu (Ultralytics format) instead of legacy format
+            model_map = {
+                "yolov5n.pt": "yolov5nu.pt",
+                "yolov5s.pt": "yolov5su.pt",
+                "yolov5m.pt": "yolov5mu.pt",
+                "yolov5l.pt": "yolov5lu.pt",
+                "yolov5x.pt": "yolov5xu.pt",
+            }
+            model_file = model_map.get(config.model_file, config.model_file)
+
+            self._detector = YOLOv11Detector(
+                model=model_file,
                 conf_thres=self._params.conf_threshold,
                 iou_thres=self._params.iou_threshold,
-                max_det=self._params.max_det
+                imgsz=self._params.img_size,
+                max_det=self._params.max_det,
+                custom_classes=None
             )
             return True, f"Loaded {config.display_name}"
 
