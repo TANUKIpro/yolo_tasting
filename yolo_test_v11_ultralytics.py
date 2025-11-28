@@ -199,7 +199,7 @@ if __name__ == "__main__":
         print(f"Found {len(segments)} segments")
 
     # Pose estimation test
-    is_yolo11_pose_test = True
+    is_yolo11_pose_test = False
     if is_yolo11_pose_test:
         print("=" * 50)
         print("YOLO11 Pose Estimation")
