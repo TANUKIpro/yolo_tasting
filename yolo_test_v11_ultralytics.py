@@ -16,9 +16,38 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from common.config import Config
-from common.utils import get_image_files, get_video_files
+from common.utils import get_image_files, get_video_files, generate_output_path
 from common.video_processor import VideoProcessor
 from detectors.yolov11_detector import YOLOv11Detector
+
+
+def batch_process_images(detector: YOLOv11Detector, input_dir: str, output_dir: str) -> None:
+    """
+    Process all images in directory.
+
+    Args:
+        detector: YOLOv11 detector instance
+        input_dir: Input directory path
+        output_dir: Output directory path
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    images = get_image_files(input_dir)
+    print(f"Processing {len(images)} images...")
+
+    for i, img_name in enumerate(images):
+        img_path = f"{input_dir}/{img_name}"
+        output_path = generate_output_path(img_path, output_dir)
+
+        _, annotated = detector.detect(img_path)
+        cv2.imwrite(output_path, annotated)
+
+        print(f"[{i+1}/{len(images)}] {img_name} -> {output_path}")
+
+        # Memory cleanup
+        if (i + 1) % 10 == 0 and torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+    print(f"\nBatch processing complete. Results in: {output_dir}")
 
 
 # Version info
@@ -102,6 +131,14 @@ if __name__ == "__main__":
         print(f"YOLO-World Detection (Custom {len(ACTIVE_CLASSES)} classes)")
         print("=" * 50)
         detections_world = detector_world.detect_and_show(TEST_IMAGE)
+
+    # Batch image processing
+    is_batch_image_test = True
+    if is_batch_image_test:
+        print("=" * 50)
+        print("YOLO11 Batch Image Processing")
+        print("=" * 50)
+        batch_process_images(detector_yolo11, Config.INPUT_DIR, OUTPUT_DIR)
 
     # Dynamic class change demo
     is_yolo_world_dynamic_class_change = False
