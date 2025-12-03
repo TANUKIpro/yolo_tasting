@@ -1,5 +1,8 @@
 # YOLO Tasting - Dependencies
 # Install: pip install -r requirements.txt
+#
+# IMPORTANT: After installing, run:
+#   pip install gradio==4.31.5 gradio_client==0.16.4 --force-reinstall --no-deps
 
 # Deep Learning
 torch>=2.0.0
@@ -16,6 +19,9 @@ numpy>=1.24.0,<2.0.0
 # Visualization
 matplotlib>=3.7.0
 
-# GUI (pinned to specific stable versions)
+# Pydantic (fix compatibility)
+pydantic>=1.10.0,<2.0.0
+
+# GUI (pinned to specific stable versions - MUST be installed last)
 gradio==4.31.5
 gradio_client==0.16.4
