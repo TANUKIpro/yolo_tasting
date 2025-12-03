@@ -1,0 +1,40 @@
+============================================================
+  YOLO Tasting GUI
+============================================================
+  Host: 127.0.0.1
+  Port: 7860
+  Share: True
+  Debug: False
+============================================================
+
+Running on local URL:  http://127.0.0.1:7860
+Running on public URL: https://049f5460b88ba0742c.gradio.live
+
+This share link expires in 72 hours. For free permanent hosting and GPU upgrades, run `gradio deploy` from Terminal to deploy to Spaces (https://huggingface.co/spaces)
+Keyboard interruption in main thread... closing server.
+Killing tunnel 127.0.0.1:7860 <> https://049f5460b88ba0742c.gradio.live
+============================================================
+  YOLO Tasting GUI
+============================================================
+  Host: 127.0.0.1
+  Port: 7860
+  Share: True
+  Debug: False
+============================================================
+
+Running on local URL:  http://127.0.0.1:7860
+Running on public URL: https://4d7b5167e1fbb5089b.gradio.live
+
+This share link expires in 72 hours. For free permanent hosting and GPU upgrades, run `gradio deploy` from Terminal to deploy to Spaces (https://huggingface.co/spaces)
+Keyboard interruption in main thread... closing server.
+Killing tunnel 127.0.0.1:7860 <> https://4d7b5167e1fbb5089b.gradio.live
+============================================================
+  YOLO Tasting GUI
+============================================================
+  Host: 127.0.0.1
+  Port: 7860
+  Share: True
+  Debug: False
+============================================================
+
+Running on local URL:  http://127.0.0.1:7860
