@@ -1,0 +1,20 @@
+# YOLO Tasting - Dependencies
+# Install: pip install -r requirements.txt
+
+# Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+
+# YOLO Models
+ultralytics>=8.0.0
+yolov5>=7.0.0
+
+# Image/Video Processing
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# GUI
+gradio>=4.0.0
