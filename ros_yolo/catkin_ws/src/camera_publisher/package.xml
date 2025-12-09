@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>camera_publisher</name>
+  <version>1.0.0</version>
+  <description>PCカメラからHSR互換トピックを発行するパッケージ</description>
+
+  <maintainer email="roboworks@example.com">roboworks</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>usb_cam</exec_depend>
+
+  <export>
+  </export>
+</package>
