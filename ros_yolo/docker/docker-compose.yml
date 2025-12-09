@@ -59,4 +59,4 @@ services:
       bash -c "source /opt/ros/noetic/setup.bash &&
         source /catkin_ws/devel/setup.bash &&
         sleep 5 &&
-        python3 /catkin_ws/src/yolov8_ros/scripts/ros_yolov8.py --weights /catkin_ws/src/yolov8_ros/weights/best.pt --topic /hsrb/head_rgbd_sensor/rgb/image_rect_color"
+        python3 /catkin_ws/src/yolov8_ros/scripts/ros_yolov8.py --weights /catkin_ws/src/yolov8_ros/weights/best.pt --topic /hsrb/head_rgbd_sensor/rgb/image_rect_color --view_img"
