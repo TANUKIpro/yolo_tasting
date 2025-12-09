@@ -57,11 +57,13 @@ class Detector:
             classes: Filter by class indices (e.g., [0, 2, 3])
             topic: ROS topic to subscribe to
         """
-        # Device selection
+        # Device selection (use integer for CUDA device)
         if device == '':
-            self.device = '0' if torch.cuda.is_available() else 'cpu'
+            self.device = 0 if torch.cuda.is_available() else 'cpu'
+        elif device == 'cpu':
+            self.device = 'cpu'
         else:
-            self.device = device
+            self.device = int(device) if device.isdigit() else device
 
         # Detection parameters
         self.conf_thres = conf_thres
@@ -138,12 +140,12 @@ class Detector:
                 cls_id = int(box.cls[0])
                 cls_name = self.names[cls_id]
 
-                # Create ROS message
+                # Create ROS message (int16 range: -32768 to 32767)
                 recog_obj = RecognitionObject()
-                recog_obj.x_min = int(xyxy[0])
-                recog_obj.y_min = int(xyxy[1])
-                recog_obj.x_max = int(xyxy[2])
-                recog_obj.y_max = int(xyxy[3])
+                recog_obj.x_min = max(-32768, min(32767, int(xyxy[0])))
+                recog_obj.y_min = max(-32768, min(32767, int(xyxy[1])))
+                recog_obj.x_max = max(-32768, min(32767, int(xyxy[2])))
+                recog_obj.y_max = max(-32768, min(32767, int(xyxy[3])))
                 recog_obj.confidence = conf
                 recog_obj.class_name = cls_name
                 recog_obj_arr.array.append(recog_obj)
