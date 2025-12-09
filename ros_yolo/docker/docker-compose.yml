@@ -30,15 +30,16 @@ services:
         roslaunch camera_publisher camera.launch
       "
 
-  # YOLOv5物体検出器
+  # YOLOv8物体検出器
   yolo:
-    image: ros-yolov5:latest
+    image: ros-yolov8:latest
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../catkin_ws/src/yolov5_ros:/catkin_ws/src/yolov5_ros
+      - ../catkin_ws/src/yolov8_ros:/catkin_ws/src/yolov8_ros
+      - /home/roboworks/Documents/hsr-perception-robocup/profiles/prof_4/models/finetuned/competition_20251210_003413/weights:/catkin_ws/src/yolov8_ros/weights
     environment:
       DISPLAY: ${DISPLAY}
       XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}
@@ -58,4 +59,4 @@ services:
       bash -c "source /opt/ros/noetic/setup.bash &&
         source /catkin_ws/devel/setup.bash &&
         sleep 5 &&
-        python3 /catkin_ws/src/yolov5_ros/scripts/ros_yolov5.py --weights /catkin_ws/src/yolov5_ros/weights/ycb.pt --topic /hsrb/head_rgbd_sensor/rgb/image_rect_color"
+        python3 /catkin_ws/src/yolov8_ros/scripts/ros_yolov8.py --weights /catkin_ws/src/yolov8_ros/weights/best.pt --topic /hsrb/head_rgbd_sensor/rgb/image_rect_color"
