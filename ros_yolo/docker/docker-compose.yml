@@ -1,0 +1,61 @@
+services:
+  # ROS Master
+  roscore:
+    image: ros:noetic-ros-base
+    command: roscore
+    network_mode: host
+    environment:
+      ROS_MASTER_URI: http://localhost:11311
+
+  # カメラパブリッシャー（PCカメラ → HSR互換トピック）
+  camera:
+    image: ros-camera:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.camera
+    volumes:
+      - ../catkin_ws/src/camera_publisher:/catkin_ws/src/camera_publisher
+    devices:
+      - /dev/video0:/dev/video0
+    network_mode: host
+    environment:
+      ROS_MASTER_URI: http://localhost:11311
+    depends_on:
+      - roscore
+    command: >
+      bash -c "
+        source /opt/ros/noetic/setup.bash &&
+        source /catkin_ws/devel/setup.bash 2>/dev/null || true &&
+        sleep 3 &&
+        roslaunch camera_publisher camera.launch
+      "
+
+  # YOLOv5物体検出器
+  yolo:
+    image: ros-yolov5:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../catkin_ws/src/yolov5_ros:/catkin_ws/src/yolov5_ros
+    environment:
+      DISPLAY: ${DISPLAY}
+      XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}
+      ROS_MASTER_URI: http://localhost:11311
+    network_mode: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    depends_on:
+      - roscore
+      - camera
+    command: >
+      bash -c "source /opt/ros/noetic/setup.bash &&
+        source /catkin_ws/devel/setup.bash &&
+        sleep 5 &&
+        python3 /catkin_ws/src/yolov5_ros/scripts/ros_yolov5.py --weights /catkin_ws/src/yolov5_ros/weights/ycb.pt --topic /hsrb/head_rgbd_sensor/rgb/image_rect_color"

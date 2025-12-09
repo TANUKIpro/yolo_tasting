@@ -1,0 +1,31 @@
+<!-- PCカメラからHSR互換トピックを発行 -->
+<launch>
+    <!-- カメラデバイス設定 -->
+    <arg name="video_device" default="/dev/video0" />
+    <arg name="image_width" default="640" />
+    <arg name="image_height" default="480" />
+    <arg name="framerate" default="30" />
+
+    <!-- usb_camノード -->
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+        <!-- デバイス設定 -->
+        <param name="video_device" value="$(arg video_device)" />
+        <param name="image_width" value="$(arg image_width)" />
+        <param name="image_height" value="$(arg image_height)" />
+        <param name="framerate" value="$(arg framerate)" />
+
+        <!-- 画像フォーマット -->
+        <param name="pixel_format" value="yuyv" />
+        <param name="color_format" value="yuv422p" />
+
+        <!-- カメラ情報 -->
+        <param name="camera_name" value="head_rgbd_sensor" />
+        <param name="camera_frame_id" value="head_rgbd_sensor_rgb_frame" />
+
+        <!-- I/O設定 -->
+        <param name="io_method" value="mmap" />
+
+        <!-- HSR互換トピック名にリマップ -->
+        <remap from="/usb_cam/image_raw" to="/hsrb/head_rgbd_sensor/rgb/image_rect_color" />
+    </node>
+</launch>

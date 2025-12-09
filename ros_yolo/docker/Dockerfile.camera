@@ -1,0 +1,29 @@
+# カメラパブリッシャー用Dockerfile
+# PCのUSB/内蔵カメラからROSトピックを発行
+
+FROM ros:noetic-ros-base
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 必要なパッケージをインストール
+RUN apt-get update && apt-get install -y \
+    ros-noetic-usb-cam \
+    ros-noetic-cv-bridge \
+    ros-noetic-image-transport \
+    python3-pip \
+    v4l-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# catkinワークスペース作成
+RUN mkdir -p /catkin_ws/src
+WORKDIR /catkin_ws
+
+# ROSセットアップ
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin_make"
+
+# エントリーポイント
+COPY ros_entrypoint.sh /ros_entrypoint.sh
+RUN chmod +x /ros_entrypoint.sh
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]
