@@ -30,19 +30,48 @@ services:
         roslaunch camera_publisher camera.launch
       "
 
-  # YOLOv5物体検出器
+  # 動画ファイルパブリッシャー
+  video:
+    image: ros-video:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.video
+    volumes:
+      - ../catkin_ws/src/video_publisher:/catkin_ws/src/video_publisher
+      - /home/roboworks/Documents/yolo_tasting/common/input:/videos:ro
+    network_mode: host
+    environment:
+      ROS_MASTER_URI: http://localhost:11311
+      VIDEO_FILE: /videos/IMG_0763-1.mp4
+      VIDEO_FPS: "30"
+      VIDEO_LOOP: "true"
+    depends_on:
+      - roscore
+    command: >
+      bash -c "
+        source /opt/ros/noetic/setup.bash &&
+        cd /catkin_ws && catkin_make &&
+        source /catkin_ws/devel/setup.bash &&
+        sleep 3 &&
+        roslaunch video_publisher video.launch
+      "
+
+  # YOLOv8物体検出器
   yolo:
-    image: ros-yolov5:latest
+    image: ros-yolov8:latest
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../catkin_ws/src/yolov5_ros:/catkin_ws/src/yolov5_ros
+      - ../catkin_ws/src/yolov8_ros:/catkin_ws/src/yolov8_ros
+      - /home/roboworks/Documents/hsr-perception-robocup/profiles/prof_4/models/finetuned/competition_20251210_003413/weights:/catkin_ws/src/yolov8_ros/weights
     environment:
       DISPLAY: ${DISPLAY}
       XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}
       ROS_MASTER_URI: http://localhost:11311
+      CONF_THRESHOLD: ${CONF_THRESHOLD:-0.5}
+      IOU_THRESHOLD: ${IOU_THRESHOLD:-0.45}
     network_mode: host
     deploy:
       resources:
@@ -53,9 +82,9 @@ services:
               capabilities: [gpu]
     depends_on:
       - roscore
-      - camera
+      - video
     command: >
       bash -c "source /opt/ros/noetic/setup.bash &&
         source /catkin_ws/devel/setup.bash &&
-        sleep 5 &&
-        python3 /catkin_ws/src/yolov5_ros/scripts/ros_yolov5.py --weights /catkin_ws/src/yolov5_ros/weights/ycb.pt --topic /hsrb/head_rgbd_sensor/rgb/image_rect_color"
+        sleep 2 &&
+        python3 /catkin_ws/src/yolov8_ros/scripts/ros_yolov8.py --weights /catkin_ws/src/yolov8_ros/weights/best.pt --topic /hsrb/head_rgbd_sensor/rgb/image_rect_color --view_img --conf-thres ${CONF_THRESHOLD:-0.5} --iou-thres ${IOU_THRESHOLD:-0.45}"

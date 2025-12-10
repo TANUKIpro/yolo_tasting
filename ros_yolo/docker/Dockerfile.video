@@ -1,0 +1,28 @@
+# Video Publisher Dockerfile
+# Publishes video file frames as ROS Image messages
+
+FROM ros:noetic-ros-base
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    ros-noetic-cv-bridge \
+    ros-noetic-image-transport \
+    python3-pip \
+    python3-opencv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create catkin workspace
+RUN mkdir -p /catkin_ws/src
+WORKDIR /catkin_ws
+
+# ROS setup
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin_make"
+
+# Entrypoint
+COPY ros_entrypoint.sh /ros_entrypoint.sh
+RUN chmod +x /ros_entrypoint.sh
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]

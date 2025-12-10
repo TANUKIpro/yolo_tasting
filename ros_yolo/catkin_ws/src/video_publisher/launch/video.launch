@@ -1,0 +1,16 @@
+<!-- Publish video file frames as ROS Image messages -->
+<launch>
+    <!-- Video file settings -->
+    <arg name="video_file" default="$(optenv VIDEO_FILE /videos/video.mp4)" />
+    <arg name="fps" default="$(optenv VIDEO_FPS 30)" />
+    <arg name="loop" default="$(optenv VIDEO_LOOP true)" />
+    <arg name="topic" default="/hsrb/head_rgbd_sensor/rgb/image_rect_color" />
+
+    <!-- Video publisher node -->
+    <node name="video_publisher" pkg="video_publisher" type="video_publisher.py" output="screen">
+        <param name="video_file" value="$(arg video_file)" />
+        <param name="fps" value="$(arg fps)" />
+        <param name="loop" value="$(arg loop)" />
+        <param name="topic" value="$(arg topic)" />
+    </node>
+</launch>

@@ -56,7 +56,7 @@ RUN pip install --no-cache -r requirements.txt albumentations comet gsutil noteb
     'opencv-python<4.6.0.66' \
     --extra-index-url https://download.pytorch.org/whl/cu113
 
-RUN pip install yolov5
+RUN pip install ultralytics>=8.0.0
 
 # Set environment variables
 ENV OMP_NUM_THREADS=8
