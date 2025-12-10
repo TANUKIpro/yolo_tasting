@@ -4,6 +4,7 @@ YOLOv8 ROS Node - Ultralytics API
 Subscribes to camera images and publishes object detections.
 """
 import argparse
+import os
 import numpy as np
 from pathlib import Path
 
@@ -37,7 +38,7 @@ class Detector:
         augment=False,       # Kept for argument compatibility
         visualize=False,     # Kept for argument compatibility
         update=False,        # Kept for argument compatibility
-        line_thickness=3,
+        line_thickness=1,
         hide_labels=False,   # Kept for argument compatibility
         hide_conf=False,     # Kept for argument compatibility
         half=False,          # Kept for argument compatibility
@@ -90,7 +91,8 @@ class Detector:
         # Get class names
         self.names = self.model.names
         rospy.loginfo(f"Device: {self.device}")
-        rospy.loginfo(f"Classes: {len(self.names)} ({list(self.names.values())[:5]}...)")
+        rospy.loginfo(f"Total classes: {len(self.names)}")
+        rospy.loginfo(f"All class names: {list(self.names.values())}")
 
         # ROS publishers and subscribers
         self.sub = rospy.Subscriber(self.sub_topic_name, Image, self.image_callback)
@@ -139,6 +141,9 @@ class Detector:
                 conf = float(box.conf[0])
                 cls_id = int(box.cls[0])
                 cls_name = self.names[cls_id]
+
+                # Debug: Log each detection
+                rospy.loginfo(f"Detected: cls_id={cls_id}, name={cls_name}, conf={conf:.3f}")
 
                 # Create ROS message (int16 range: -32768 to 32767)
                 recog_obj = RecognitionObject()
@@ -189,10 +194,12 @@ if __name__ == "__main__":
                         help='model.pt path(s)')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640,
                         help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.5,
-                        help='confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.45,
-                        help='NMS IoU threshold')
+    parser.add_argument('--conf-thres', type=float,
+                        default=float(os.environ.get('CONF_THRESHOLD', '0.5')),
+                        help='confidence threshold (env: CONF_THRESHOLD)')
+    parser.add_argument('--iou-thres', type=float,
+                        default=float(os.environ.get('IOU_THRESHOLD', '0.45')),
+                        help='NMS IoU threshold (env: IOU_THRESHOLD)')
     parser.add_argument('--max-det', type=int, default=1000,
                         help='maximum detections per image')
     parser.add_argument('--device', default='',
@@ -209,7 +216,7 @@ if __name__ == "__main__":
                         help='visualize features (kept for compatibility)')
     parser.add_argument('--update', action='store_true',
                         help='update all models (kept for compatibility)')
-    parser.add_argument('--line-thickness', default=3, type=int,
+    parser.add_argument('--line-thickness', default=1, type=int,
                         help='bounding box thickness (pixels)')
     parser.add_argument('--hide-labels', default=False, action='store_true',
                         help='hide labels (kept for compatibility)')
